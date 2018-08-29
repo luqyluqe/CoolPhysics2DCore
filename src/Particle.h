@@ -43,9 +43,7 @@ public:
     double lifeTime()const;
     double radius()const;
     const Vector& position()const;
-    void setPosition(const Vector&);
     const Vector& velocity()const;
-    void setVelocity(const Vector&);
     Vector& acceleration()const;
     const Color& color()const;
     Circle range()const;
@@ -54,6 +52,43 @@ public:
 private:
     raw::Particle* _particle;
     RetainCount _retainCount;
+};
+
+class ParticleBuilder
+{
+public:
+    ParticleBuilder();
+    
+    ParticleBuilder& overlappable(bool overlappable);
+    ParticleBuilder& radius(double radius);
+    ParticleBuilder& mass(double mass);
+    ParticleBuilder& elasticity(double elasticity);
+    ParticleBuilder& position(const Vector& position);
+    ParticleBuilder& velocity(const Vector& velocity);
+    ParticleBuilder& acceleration(const Vector& acceleration);
+    ParticleBuilder& lifetime(double lifetime);
+    ParticleBuilder& color(const Color& color);
+    
+    Particle* build()const;
+    
+private:
+    bool _overlappable;
+    double _lifeTime;
+    
+    double _radius;
+    double _mass;
+    double _elasticity;
+    double _friction;
+    
+    Vector _position;
+    Vector _velocity;
+    Vector _acceleration;
+    
+    Vector _lastPosition;
+    Vector _lastVelocity;
+    Vector _lastAcceleration;
+    
+    Color _color;
 };
 
 END_NAMESPACE_COOLPHYSICS2D
