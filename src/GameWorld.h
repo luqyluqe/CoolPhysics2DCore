@@ -23,6 +23,9 @@ public:
 	GameWorld(Rectangle range);
     //Destructor
     ~GameWorld();
+    
+    void lock();
+    void unlock();
 
 	//Accessor
 	const Rectangle& range()const;
@@ -48,6 +51,7 @@ protected:
     ThreadPool& threadPool();
     std::vector<Field*> fields()const;
 private:
+    std::mutex mutex;
     ThreadPool _threadPool;
     void update(Particle* particle,double timeInterval);
 	void bounce(Particle* Particle)const;

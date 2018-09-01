@@ -20,7 +20,7 @@ BEGIN_NAMESPACE_COOLPHYSICS2D
 class Particle
 {
 public:
-    std::mutex _destructorMutex;
+//    std::mutex _destructorMutex;
     
     Particle(bool overlappable,double radius,double mass,double elasticity,Vector position,Vector velocity,Vector acceleration,double lifeTime,Color color=Color::whiteColor);
     Particle(Particle const& particle);

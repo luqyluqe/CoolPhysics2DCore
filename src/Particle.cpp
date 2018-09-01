@@ -12,11 +12,11 @@ Particle::Particle(Particle const& particle):_retainCount(particle._retainCount)
 
 Particle::~Particle()
 {
-    _destructorMutex.lock();
+//    _destructorMutex.lock();
     if (_retainCount.only()) {
         delete _particle;
     }
-    _destructorMutex.unlock();
+//    _destructorMutex.unlock();
 }
 
 std::string Particle::description()const

@@ -18,6 +18,15 @@ GameWorld::~GameWorld()
     }
 }
 
+void GameWorld::lock()
+{
+    mutex.lock();
+}
+void GameWorld::unlock()
+{
+    mutex.unlock();
+}
+
 ThreadPool& GameWorld::threadPool()
 {
     return _threadPool;
@@ -146,26 +155,26 @@ void GameWorld::update(float timeInterval)
         }
     }
     size_t size=_particles.size();
-    if (size<100000000) {
+//    if (true) {
         for (size_t i=0; i<size; i++) {
             Particle* pi=_particles[i];
             update(pi, timeInterval);
         }
-    }else{
-        size_t section=size/4;
-        for (size_t i=0; i<3; i++) {
-            _threadPool.enqueue([section,i,this,timeInterval]{
-                for (size_t j=0; j<section; j++) {
-                    Particle* p=_particles[i*section+j];
-                    update(p, timeInterval);
-                }
-            });
-        }
-        for (size_t k=3*section; k<size; k++) {
-            Particle* p=_particles[k];
-            update(p, timeInterval);
-        }
-    }
+//    }else{
+//        size_t section=size/4;
+//        for (size_t i=0; i<3; i++) {
+//            _threadPool.enqueue([section,i,this,timeInterval]{
+//                for (size_t j=0; j<section; j++) {
+//                    Particle* p=_particles[i*section+j];
+//                    update(p, timeInterval);
+//                }
+//            });
+//        }
+//        for (size_t k=3*section; k<size; k++) {
+//            Particle* p=_particles[k];
+//            update(p, timeInterval);
+//        }
+//    }
 
     for (size_t i=0; i<_unoverlappableParticles.size(); i++) {
         Particle* pi=_unoverlappableParticles[i];
@@ -191,9 +200,14 @@ void GameWorld::update(float timeInterval)
 void GameWorld::update(Particle* particle,double timeInterval)
 {
     if (particle->lifeTime()<0) {
-        removeParticle(particle);
-        return;
+        bool success = mutex.try_lock();
+        if (success) {
+            removeParticle(particle);
+            mutex.unlock();
+            return;
+        }
     }
+    
     particle->update(timeInterval);
     for (size_t j=0; j<_fields.size(); j++) {
         Field* f=_fields[j];
